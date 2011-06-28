@@ -7649,7 +7649,7 @@ $.extend(Datepicker.prototype, {
 		var handled = true;
 		var isRTL = inst.dpDiv.is('.ui-datepicker-rtl');
 		inst._keyEvent = true;
-		if ($.datepicker._datepickerShowing)
+		if ($.datepicker._datepickerShowing || $.datepicker._datepickerAnimatingShow)
 			switch (event.keyCode) {
 				case 9: $.datepicker._hideDatepicker();
 						handled = false;
@@ -7793,13 +7793,20 @@ $.extend(Datepicker.prototype, {
 		if (!inst.inline) {
 			var showAnim = $.datepicker._get(inst, 'showAnim');
 			var duration = $.datepicker._get(inst, 'duration');
+			$.datepicker._datepickerAnimatingShow = true;
 			var postProcess = function() {
+				$.datepicker._datepickerAnimatingShow = false;
 				$.datepicker._datepickerShowing = true;
 				var cover = inst.dpDiv.find('iframe.ui-datepicker-cover'); // IE6- only
 				if( !! cover.length ){
 					var borders = $.datepicker._getBorders(inst.dpDiv);
 					cover.css({left: -borders[0], top: -borders[1],
 						width: inst.dpDiv.outerWidth(), height: inst.dpDiv.outerHeight()});
+				}
+				
+				if ($.datepicker._hideAfterShow) {
+					$.datepicker._hideAfterShow = false;
+					$.datepicker._hideDatepicker(input)
 				}
 			};
 			inst.dpDiv.zIndex($(input).zIndex()+1);
@@ -7949,6 +7956,9 @@ $.extend(Datepicker.prototype, {
 				}
 			}
 			this._inDialog = false;
+		} else {
+			/* Immediately hide the datepicker once it finishes animating the show. */
+			this._hideAfterShow = true;
 		}
 	},
 
