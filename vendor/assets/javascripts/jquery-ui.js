@@ -6531,22 +6531,12 @@ $.widget( "ui.autocomplete", {
 		// If we have a preserved selection, re-select it
 		if (this.currentlySelected && this.currentlySelected.uniqueId) {
 			var item = this.currentlySelected;
-			var found = false;
-			var candidates = [];
 			$.each(this.menu.element.find('.ui-menu-item'), function(index, element) {
 				var candidate = $(element).data("item.autocomplete");
-				candidates.push(candidate);
 				if (candidate && item.uniqueId == candidate.uniqueId) {
-					found = true;
-					console.log("Found same item with ID", item.uniqueId);
 					self.menu.activate(new $.Event("mouseover"), $(element));
 				}
 			});
-			if (!found) {
-				console.warn("Couldn't find something with id", item.uniqueId, "among", candidates);
-			}
-		} else {
-			console.log("Item missing unique ID", item);
 		}
 	},
 
